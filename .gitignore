@@ -1,7 +1,8 @@
 
 # Source files
-busybox-*
-linux-*
+busybox*
+linux*
+go*
 
 # Output files
 vmlinux
