@@ -22,6 +22,9 @@ mount -t devtmpfs -o exec,nosuid,mode=0755,size=2M devtmpfs /dev
 mkdir -p /dev/pts /dev/shm
 mount -t devpts -o gid=5,mode=0620,noexec,nosuid devpts /dev/pts
 mount -t tmpfs -o nodev,nosuid,noexec shm /dev/shm
+mkdir -p /tmp /run
+mount -t tmpfs -o noexec,nosuid,nodev tmpfs /run
+mount -t tmpfs -o noexec,nosuid,nodev tmpfs /tmp
 set +x
 
 echo
