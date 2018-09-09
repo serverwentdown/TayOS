@@ -25,14 +25,14 @@ inside our build environment.
 
 ```
 # Configure and build the kernel sources
-./01-kernel.sh
+./00-kernel.sh
 ```
 
 ## Busybox
 
 ```
 # Configure and build Busybox
-./02-busybox.sh
+./01-busybox.sh
 ```
 
 ## Initial Root Filesystem
@@ -44,7 +44,7 @@ daemon.
 
 ```
 # Copies busybox and rootfs/ into a initramfs image
-./03-initramfs.sh
+./30-initramfs.sh
 ```
 
 ## Testing
