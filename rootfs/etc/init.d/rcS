@@ -1,0 +1,14 @@
+#!/bin/sh
+
+echo
+echo "Setting hostname..."
+set -x
+hostname -F /etc/hostname
+set +x
+
+echo
+echo "Bringing up loopback interface"
+set -x
+ip link set up lo
+set +x
+
