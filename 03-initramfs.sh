@@ -6,10 +6,14 @@ echo
 echo "Setting up a inital RAM filesystem image..."
 
 echo
+echo "Fixing permissions..."
+echo " + chown -R 0:0 rootfs/"
+chown -R 0:0 rootfs/
+
+echo
 echo "Generating the list of files to include..."
-echo "Including files both from rootfs and busybox"
-echo " + ./$KERNEL_VERSION/scripts/gen_initramfs_list.sh rootfs/ busybox/_install/ > initramfs.list"
-./$KERNEL_VERSION/scripts/gen_initramfs_list.sh rootfs/ busybox/_install/ > initramfs.list
+echo " + ./$KERNEL_VERSION/scripts/gen_initramfs_list.sh rootfs/ $BUSYBOX_VERSION/_install/ > initramfs.list"
+./$KERNEL_VERSION/scripts/gen_initramfs_list.sh rootfs/ $BUSYBOX_VERSION/_install/ > initramfs.list
 
 echo
 echo "Generating the image..."

@@ -11,6 +11,9 @@ read -p "Do you want to customize your kernel? (y/n) " -t 10 customize
 if [ "$customize" == "y" ]; then
     echo " + make menuconfig"
     make menuconfig
+    
+    echo
+    echo "Backing up your configuration..."
     CONFIG_BACKUP="config-$(date +"%Y%m%d_%H%M%S")"
     echo " + cp .config $CONFIG_BACKUP"
     cp .config $CONFIG_BACKUP

@@ -11,6 +11,9 @@ read -p "Do you want to customize busybox? (y/n) " -t 10 customize
 if [ "$customize" == "y" ]; then
     echo " + make menuconfig"
     make menuconfig
+
+    echo
+    echo "Backing up your configuration..."
     CONFIG_BACKUP="config-$(date +"%Y%m%d_%H%M%S")"
     echo " + cp .config $CONFIG_BACKUP"
     cp .config $CONFIG_BACKUP
@@ -22,7 +25,7 @@ fi
 
 echo
 echo "Enabling static busybox..."
-echo "Using sed to set CONFIG_STATIC=y"
+echo " + sed -ir 's/^(CONFIG_STATIC=.*|# CONFIG_STATIC is not set)/CONFIG_STATIC=y/' .config"
 sed -ir 's/^(CONFIG_STATIC=.*|# CONFIG_STATIC is not set)/CONFIG_STATIC=y/' .config
 
 echo
