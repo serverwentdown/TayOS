@@ -26,7 +26,7 @@ fi
 echo
 echo "Enabling static busybox..."
 echo " + sed -ir 's/^(CONFIG_STATIC=.*|# CONFIG_STATIC is not set)/CONFIG_STATIC=y/' .config"
-sed -ir 's/^(CONFIG_STATIC=.*|# CONFIG_STATIC is not set)/CONFIG_STATIC=y/' .config
+sed -i -r 's/^(CONFIG_STATIC=.*|# CONFIG_STATIC is not set)/CONFIG_STATIC=y/' .config
 
 echo
 echo "Building busybox... This may take a while"
