@@ -12,3 +12,5 @@ else
         PS1="$GREEN\h [$NORMAL\w$GREEN]\$ $NORMAL"
 fi
 
+# Go
+export PATH="/usr/local/go/bin:$PATH"

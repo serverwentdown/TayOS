@@ -2,7 +2,7 @@
 
 set -ex
 
-qemu-system-x86_64 -m 512M \
+qemu-system-x86_64 -m 1024M \
     -machine pc-i440fx-2.11 \
     -kernel vmlinux \
     -initrd initramfs.img \
