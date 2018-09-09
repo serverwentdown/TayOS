@@ -7,7 +7,7 @@ echo " + cd $KERNEL_VERSION/"
 cd $KERNEL_VERSION/
 
 echo
-read -p "Do you want to customize your kernel? (y/n) " -t 10 customize
+read -p "Do you want to customize your kernel? (y/n) " -t 10 customize || customize=n
 if [ "$customize" == "y" ]; then
     echo " + make menuconfig"
     make menuconfig

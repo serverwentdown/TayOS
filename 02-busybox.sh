@@ -7,7 +7,7 @@ echo " + cd $BUSYBOX_VERSION/"
 cd $BUSYBOX_VERSION/
 
 echo
-read -p "Do you want to customize busybox? (y/n) " -t 10 customize
+read -p "Do you want to customize busybox? (y/n) " -t 10 customize || customize=n
 if [ "$customize" == "y" ]; then
     echo " + make menuconfig"
     make menuconfig
