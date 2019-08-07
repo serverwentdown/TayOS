@@ -11,6 +11,8 @@ like Yocto and Alpine.
 
 # Getting started
 
+For a breakdown of every step, visit the [blog post](https://makerforce.io/make-your-own-linux/) I wrote.
+
 ## Environment
 
 ```

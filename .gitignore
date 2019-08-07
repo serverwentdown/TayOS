@@ -8,4 +8,4 @@ go*
 vmlinux
 initramfs.img
 initramfs.list
-
+rootfs/usr/local/go
