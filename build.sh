@@ -2,8 +2,8 @@
 
 set -e
 
-export KERNEL_VERSION="linux-4.18.6"
-export BUSYBOX_VERSION="busybox-1.29.2"
+export KERNEL_VERSION="linux-5.2.6"
+export BUSYBOX_VERSION="busybox-1.31.0"
 
 echo
 echo ' _______           ____   _____ '
@@ -29,7 +29,7 @@ apk add \
     flex \
     bc \
     perl \
-    libelf-dev \
+    elfutils-dev \
     openssl-dev \
     linux-headers \
     findutils
@@ -40,7 +40,7 @@ if [ -d $KERNEL_VERSION/ ]; then
 else
     echo
     echo "Fetching $KERNEL_VERSION..."
-    KERNEL_URL="https://cdn.kernel.org/pub/linux/kernel/v4.x/$KERNEL_VERSION.tar.xz"
+    KERNEL_URL="https://cdn.kernel.org/pub/linux/kernel/v5.x/$KERNEL_VERSION.tar.xz"
     echo " + wget $KERNEL_URL"
     wget $KERNEL_URL
     echo " + tar -xf $KERNEL_VERSION.tar.xz"

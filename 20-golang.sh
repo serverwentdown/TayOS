@@ -2,7 +2,7 @@
 
 set -e
 
-GOLANG_VERSION=go1.11
+GOLANG_VERSION=go1.12
 
 echo
 echo "Fetching dependencies..."
