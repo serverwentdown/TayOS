@@ -1,0 +1,9 @@
+::sysinit:/etc/init.d/rcS
+::askfirst:/bin/login
+::ctrlaltdel:/sbin/reboot
+::shutdown:/sbin/swapoff -a
+::shutdown:/bin/umount -a -r
+::restart:/sbin/init
+tty2::askfirst:/bin/login
+tty3::askfirst:/bin/login
+tty4::askfirst:/bin/login
