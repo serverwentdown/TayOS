@@ -13,7 +13,7 @@ chown -R 0:0 rootfs/
 echo
 echo "Generating the list of files to include..."
 echo " + ./$KERNEL_VERSION/scripts/gen_initramfs_list.sh rootfs/ $BUSYBOX_VERSION/_install/ > initramfs.list"
-./$KERNEL_VERSION/scripts/gen_initramfs_list.sh rootfs/ $BUSYBOX_VERSION/_install/ > initramfs.list
+./$KERNEL_VERSION/usr/gen_initramfs_list.sh rootfs/ $BUSYBOX_VERSION/_install/ > initramfs.list
 
 echo
 echo "Generating the image..."

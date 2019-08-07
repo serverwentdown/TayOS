@@ -1,0 +1,11 @@
+
+# Source files
+busybox*
+linux*
+go*
+
+# Output files
+vmlinux
+initramfs.img
+initramfs.list
+
