@@ -1,11 +1,4 @@
-
-# Source files
-busybox*
-linux*
-go*
-
 # Output files
-vmlinux
-initramfs.img
-initramfs.list
-rootfs/usr/local/go
+vmlinuz
+initramfs
+*.iso
