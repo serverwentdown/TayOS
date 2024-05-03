@@ -102,7 +102,79 @@ openssl:
 			--prefix=/usr \
 			--libdir=lib \
 			--openssldir=/etc/ssl \
+			# Enable static linking
 			-static \
+			# Reduce disk usage
+			no-afalgeng \
+			no-argon2 \
+			no-aria \
+			no-autoerrinit \
+			no-bf \
+			no-blake2 \
+			no-brotli \
+			no-brotli-dynamic \
+			no-camellia \
+			no-capieng \
+			no-winstore \
+			no-cast \
+			no-cmac \
+			no-cmp \
+			no-cms \
+			no-ct \
+			no-des \
+			no-dgram \
+			no-dsa \
+			no-dso \
+			no-dtls \
+			no-dynamic-engine \
+			no-ec_nistp_64_gcc_128 \
+			no-ecx \
+			no-egd \
+			no-engine \
+			no-fips \
+			no-filenames \
+			no-gost \
+			no-http \
+			no-legacy \
+			no-loadereng \
+			no-md2 \
+			no-md4 \
+			no-module \
+			no-multiblock \
+			no-nextprotoneg \
+			no-ocb \
+			no-ocsp \
+			no-padlockeng \
+			no-psk \
+			no-quic \
+			no-rc2 \
+			no-rc4 \
+			no-rdrand \
+			no-rfc3779 \
+			no-rmd160 \
+			no-scrypt \
+			no-sctp \
+			no-secure-memory \
+			no-shared \
+			no-siphash \
+			no-siv \
+			no-sm2 \
+			no-sm2-precomp \
+			no-sm3 \
+			no-sm4 \
+			no-srp \
+			no-srtp \
+			no-static-engine \
+			no-ssl-trace \
+			no-tests \
+			no-ts \
+			no-ui-console \
+			no-unit-test \
+			no-whirlpool \
+			no-zlib-dynamic \
+			no-zstd \
+			no-zstd-dynamic \
+			# Continued standard arguments
 			enable-ktls \
 			#shared \
 			no-docs \
@@ -134,6 +206,10 @@ openssl:
 			_install/etc/ssl/private/ \
 			_install/etc/ssl/ct_log_list* \
 			_install/etc/ssl/openssl.cnf.*
+	# Test OpenSSL
+	RUN ls -l ./_install/usr/bin/openssl \
+		&& ./_install/usr/bin/openssl 2>&1 \
+		&& echo "GET /" | ./_install/usr/bin/openssl s_client google.com:443
 	# Export OpenSSL
 	SAVE ARTIFACT _install/*
 
