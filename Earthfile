@@ -65,7 +65,7 @@ kernel:
 
 busybox:
 	ARG version=1.36.1
-	# Download busybox
+	# Download BusyBox
 	RUN wget -O busybox.tar.bz2 https://busybox.net/downloads/busybox-${version}.tar.bz2 \
 		&& tar --bzip2 -xf busybox.tar.bz2 \
 		&& mv busybox-${version} busybox
@@ -73,18 +73,77 @@ busybox:
 	# Download tools
 	RUN apk add --no-cache \
 			linux-headers
-	# Configure busybox
+	# Configure BusyBox
 	RUN make defconfig
 	RUN sed -i -r 's/^(CONFIG_STATIC=.*|# CONFIG_STATIC is not set)/CONFIG_STATIC=y/' .config
-	# Build busybox
+	# Build BusyBox
 	RUN make -j$(nproc)
-	RUN make install
-	# Export busybox
+	RUN make install \
+		# Remove unneeded BusyBox files
+		&& rm -r \
+			_install/linuxrc
+	# Export BusyBox
+	SAVE ARTIFACT _install/*
+
+openssl:
+	ARG version=3.3.0
+	# Download OpenSSL
+	RUN wget -O openssl.tar.gz https://www.openssl.org/source/openssl-${version}.tar.gz \
+		&& tar --gzip -xf openssl.tar.gz \
+		&& mv openssl-${version} openssl
+	WORKDIR openssl
+	# Download tools
+	RUN apk add --no-cache \
+			linux-headers \
+			perl
+	# Configure OpenSSL
+	RUN ./Configure \
+			linux-x86_64 \
+			--prefix=/usr \
+			--libdir=lib \
+			--openssldir=/etc/ssl \
+			-static \
+			enable-ktls \
+			#shared \
+			no-docs \
+			no-deprecated \
+			no-zlib \
+			no-async \
+			no-comp \
+			no-idea \
+			no-mdc2 \
+			no-rc5 \
+			no-ec2m \
+			no-ssl3 \
+			no-seed \
+			no-weak-ssl-ciphers \
+			-Wa,--noexecstack
+	# Build OpenSSL
+	RUN make -j$(nproc)
+	RUN make DESTDIR="_install" install \
+		# Remove unneeded OpenSSL files
+		&& rm -r \
+			_install/usr/lib/cmake/ \
+			_install/usr/lib/engines-3/ \
+			_install/usr/lib/ossl-modules/ \
+			_install/usr/lib/pkgconfig/ \
+			#_install/usr/lib/*.so* \
+			_install/usr/lib/*.a \
+			_install/usr/include/ \
+			_install/etc/ssl/misc/ \
+			_install/etc/ssl/private/ \
+			_install/etc/ssl/ct_log_list* \
+			_install/etc/ssl/openssl.cnf.*
+	# Export OpenSSL
 	SAVE ARTIFACT _install/*
 
 rootfs:
 	RUN mkdir rootfs
 	COPY +busybox/ rootfs/
+	COPY +openssl/ rootfs/
+	RUN mkdir -p rootfs/etc/ssl/certs rootfs/usr/share/ca-certificates \
+		&& cp -R /etc/ssl/certs/* rootfs/etc/ssl/certs/ \
+		&& cp -R /usr/share/ca-certificates/* rootfs/usr/share/ca-certificates/
 	COPY rootfs/ rootfs/
 	SAVE ARTIFACT rootfs/*
 

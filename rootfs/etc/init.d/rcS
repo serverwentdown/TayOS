@@ -7,8 +7,13 @@ hostname -F /etc/hostname
 set +x
 
 echo
-echo "Bringing up loopback interface"
-set -x
-ip link set up lo
-set +x
+echo "Setting up networking..."
+interfaces=$(awk '$1 == "auto" {for (i = 2; i <= NF; i = i + 1) printf("%s ", $i)}' /etc/network/interfaces)
 
+for interface in $interfaces; do
+	echo
+	echo "Bringing up $interface interface..."
+	set -x
+	ifup $interface
+	set +x
+done
