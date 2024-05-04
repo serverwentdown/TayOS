@@ -81,5 +81,5 @@ qemu-system-x86_64 -machine q35 -m 512M -nic user -boot d -cdrom tayos.iso -bios
 ## Customizing the kernel
 
 ```sh
-earthly --artifact '+iso/*' --menuconfig=yes --cache=no
+earthly +kernel-menuconfig
 ```
