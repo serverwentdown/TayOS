@@ -9,13 +9,8 @@ RUN apk add --no-cache \
 		xz
 
 kernel-src:
-	ARG major_version
-	ARG version
-	# Download kernel
-	RUN wget -O linux.tar.xz https://cdn.kernel.org/pub/linux/kernel/v${major_version}.x/linux-${version}.tar.xz \
-		&& tar --xz -xf linux.tar.xz \
-		&& mv linux-${version} kernel
-	WORKDIR kernel
+	ARG major_version=6
+	ARG version=6.8.7
 	# Download tools
 	RUN apk add --no-cache \
 			ccache \
@@ -32,31 +27,30 @@ kernel-src:
 			diffutils \
 			findutils \
 			ncurses-dev
+	# Download kernel
+	RUN wget -O linux.tar.xz https://cdn.kernel.org/pub/linux/kernel/v${major_version}.x/linux-${version}.tar.xz \
+		&& tar --xz -xf linux.tar.xz \
+		&& mv linux-${version} kernel
+	WORKDIR kernel
 	# Configure kernel
 	COPY config .config
 
-kernel-shell:
-	ARG major_version=6
-	ARG version=6.8.7
-	FROM +kernel-src \
-		--major_version=$major_version \
-		--version=$version
+kernel-menuconfig:
+	FROM +kernel-src
 	# Open a shell to poke around menuconfig
-	RUN false
+	RUN --interactive-keep make menuconfig
+	SAVE ARTIFACT .config AS LOCAL config
 
 kernel:
-	ARG major_version=6
-	ARG version=6.8.7
-	FROM +kernel-src \
-		--major_version=$major_version \
-		--version=$version
-	# Build kernel
+	FROM +kernel-src
+	# Cache the kernel build
 	CACHE --sharing=private /ccache
 	ENV CCACHE_DIR=/ccache
+	ENV PATH="/usr/lib/ccache/bin:$PATH"
 	ENV KBUILD_BUILD_TIMESTAMP=0
 	RUN ccache -s
-	RUN export PATH="/usr/lib/ccache/bin:$PATH" \
-		&& make -j$(nproc) \
+	# Build kernel
+	RUN make -j$(nproc) \
 			KBUILD_BUILD_VERSION=TayOS \
 			bzImage
 	RUN ccache -s
@@ -65,14 +59,14 @@ kernel:
 
 busybox:
 	ARG version=1.36.1
+	# Download tools
+	RUN apk add --no-cache \
+			linux-headers
 	# Download BusyBox
 	RUN wget -O busybox.tar.bz2 https://busybox.net/downloads/busybox-${version}.tar.bz2 \
 		&& tar --bzip2 -xf busybox.tar.bz2 \
 		&& mv busybox-${version} busybox
 	WORKDIR busybox
-	# Download tools
-	RUN apk add --no-cache \
-			linux-headers
 	# Configure BusyBox
 	RUN make defconfig
 	RUN sed -i -r 's/^(CONFIG_STATIC=.*|# CONFIG_STATIC is not set)/CONFIG_STATIC=y/' .config
@@ -87,15 +81,15 @@ busybox:
 
 openssl:
 	ARG version=3.3.0
+	# Download tools
+	RUN apk add --no-cache \
+			linux-headers \
+			perl
 	# Download OpenSSL
 	RUN wget -O openssl.tar.gz https://www.openssl.org/source/openssl-${version}.tar.gz \
 		&& tar --gzip -xf openssl.tar.gz \
 		&& mv openssl-${version} openssl
 	WORKDIR openssl
-	# Download tools
-	RUN apk add --no-cache \
-			linux-headers \
-			perl
 	# Configure OpenSSL
 	RUN ./Configure \
 			linux-x86_64 \
@@ -230,12 +224,13 @@ cpio:
 	RUN ./usr/gen_initramfs.sh -o initramfs rootfs/
 	SAVE ARTIFACT initramfs
 
-all:
+kernel-and-initramfs:
 	COPY +kernel/vmlinuz .
 	COPY +cpio/initramfs .
 	SAVE ARTIFACT *
 
 iso-efi:
+	# Download tools
 	RUN apk add --no-cache \
 			mtools \
 			grub grub-efi
@@ -256,6 +251,7 @@ iso-efi:
 	SAVE ARTIFACT efi.img
 
 iso:
+	# Download tools
 	RUN apk add --no-cache \
 			xorriso
 	# Copy in ISO EFI image
@@ -283,11 +279,18 @@ iso:
 			isoroot
 	SAVE ARTIFACT tayos.iso
 
+test-qemu-kernel:
+	RUN apk add --no-cache \
+			qemu qemu-system-x86_64 \
+			ovmf
+	COPY +kernel-and-initramfs/* .
+	RUN --interactive qemu-system-x86_64 -machine q35 -m 512M -nic user -kernel vmlinuz -initrd initramfs -append 'console=ttyS0' -nographic
+
 test-qemu-iso:
 	RUN apk add --no-cache \
 			qemu qemu-system-x86_64 \
 			ovmf
 	COPY +iso/tayos.iso .
-	RUN qemu-system-x86_64 -machine q35 -bios /usr/share/ovmf/bios.bin -m 512M -nic user -boot d -cdrom tayos.iso
+	RUN --interactive qemu-system-x86_64 -machine q35 -m 512M -nic user -boot d -cdrom tayos.iso -bios /usr/share/ovmf/bios.bin -nographic
 	# On Fedora:
-	#   qemu-system-x86_64 -machine q35 -bios /usr/share/OVMF/OVMF_CODE.fd -m 512M -nic user -boot d -cdrom tayos.iso
+	#   qemu-system-x86_64 -machine q35 -m 512M -nic user -boot d -cdrom tayos.iso -bios /usr/share/OVMF/OVMF_CODE.fd
